@@ -14,10 +14,15 @@ const feedbackPanel = document.querySelector("#feedback-panel");
 const retryButton = document.querySelector("#retry-button");
 const accent = document.querySelector("#accent");
 const speed = document.querySelector("#speed");
+const historyEmpty = document.querySelector("#history-empty");
+const historyList = document.querySelector("#history-list");
+const historyItems = document.querySelector("#history-items");
+const historyCount = document.querySelector("#history-count");
 
 let recorder;
 let recordingTimer;
 let recordingSeconds = 0;
+const HISTORY_KEY = "speakly-english-practice-history";
 
 function htmlToPlainText(html) {
   const container = document.createElement("div");
@@ -62,10 +67,59 @@ function updateTranslation() {
   translationPreview.textContent = translation || "输入中文翻译后，这里会显示翻译预览。";
 }
 
+function getHistory() {
+  try {
+    return JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function savePractice() {
+  const scene = document.querySelector(".scene-option.is-selected")?.dataset.scene || "面试";
+  const history = getHistory();
+  history.unshift({
+    id: Date.now(),
+    createdAt: new Date().toISOString(),
+    scene,
+    english: textInput.value.trim(),
+    translation: translationInput.value.trim(),
+    scores: { overall: 82, pronunciation: 86, rhythm: 78, fluency: 82 },
+  });
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(0, 50)));
+  renderHistory();
+}
+
+function formatDate(isoDate) {
+  return new Intl.DateTimeFormat("zh-CN", {
+    year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit",
+  }).format(new Date(isoDate));
+}
+
+function renderHistory() {
+  const history = getHistory();
+  const hasHistory = history.length > 0;
+  historyEmpty.classList.toggle("is-hidden", hasHistory);
+  historyList.classList.toggle("is-hidden", !hasHistory);
+  historyCount.textContent = `${history.length} 次练习`;
+  historyItems.innerHTML = history.map((item) => `
+    <article class="history-item">
+      <div class="history-item-main">
+        <div class="history-item-meta"><span class="history-scene">${item.scene}</span><time>${formatDate(item.createdAt)}</time></div>
+        <p class="history-english">${item.english || "未填写英文内容"}</p>
+        ${item.translation ? `<p class="history-translation">${item.translation}</p>` : ""}
+      </div>
+      <div class="history-score"><strong>${item.scores.overall}</strong><span>综合分</span></div>
+    </article>
+  `).join("");
+}
+
 function showView(target) {
   document.querySelectorAll(".view").forEach((view) => view.classList.toggle("is-visible", view.id === target));
   document.querySelectorAll(".nav-item").forEach((item) => item.classList.toggle("is-active", item.dataset.target === target));
   document.querySelector("#page-title").textContent = target === "history" ? "查看你的训练记录" : "开始一段朗读练习";
+  if (target === "history") renderHistory();
 }
 
 textInput.addEventListener("input", updateText);
@@ -154,6 +208,7 @@ async function toggleRecording() {
       recordLabel.textContent = "开始跟读";
       recordState.textContent = "录音已完成";
       feedbackPanel.classList.remove("is-hidden");
+      savePractice();
       feedbackPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
     };
     recorder.start();
@@ -182,3 +237,4 @@ retryButton.addEventListener("click", () => {
 
 updateText();
 updateTranslation();
+renderHistory();

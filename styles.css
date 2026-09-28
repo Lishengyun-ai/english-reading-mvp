@@ -128,6 +128,20 @@ select { display: block; min-width: 120px; margin-top: 5px; padding: 8px; border
 .empty-icon { width: 48px; height: 48px; display: grid; place-items: center; border-radius: 50%; color: var(--blue); background: var(--mint); font-size: 22px; }
 .history-empty h2 { margin-top: 17px; }
 .history-empty p { margin: 9px 0 18px; color: var(--muted); font-size: 12px; }
+.history-list { padding-top: 34px; }
+.history-list-heading { display: flex; align-items: flex-end; justify-content: space-between; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
+.history-count { color: var(--muted); font-size: 11px; }
+.history-item { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; padding: 20px 0; border-bottom: 1px solid var(--line); }
+.history-item-main { min-width: 0; }
+.history-item-meta { display: flex; align-items: center; gap: 10px; }
+.history-scene { padding: 4px 8px; border-radius: 4px; color: #426553; background: #eaf6f0; font-size: 10px; font-weight: 700; }
+.history-item time { color: var(--muted); font-size: 10px; }
+.history-english, .history-translation { margin-top: 10px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.history-english { color: var(--ink); font-family: Georgia, serif; font-size: 16px; line-height: 1.5; }
+.history-translation { color: var(--muted); font-size: 12px; line-height: 1.5; }
+.history-score { flex: 0 0 68px; text-align: center; }
+.history-score strong { display: block; color: var(--blue); font-family: Georgia, serif; font-size: 30px; font-weight: 500; }
+.history-score span { color: var(--muted); font-size: 10px; }
 
 @media (max-width: 880px) {
   .sidebar { width: 210px; flex-basis: 210px; }
@@ -152,4 +166,7 @@ select { display: block; min-width: 120px; margin-top: 5px; padding: 8px; border
   .select-wrap, select, .primary-button { width: 100%; }
   .practice-actions { align-items: stretch; flex-direction: column; }
   .scene-panel-top .scene-options { grid-template-columns: 1fr; }
+  .history-list-heading { align-items: flex-start; gap: 10px; flex-direction: column; }
+  .history-item { gap: 12px; }
+  .history-score { flex-basis: 52px; }
 }
