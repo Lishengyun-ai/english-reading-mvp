@@ -16,6 +16,37 @@ let recorder;
 let recordingTimer;
 let recordingSeconds = 0;
 
+function htmlToPlainText(html) {
+  const container = document.createElement("div");
+  container.innerHTML = html;
+
+  const blockTags = new Set(["ADDRESS", "ARTICLE", "ASIDE", "BLOCKQUOTE", "DIV", "DL", "DT", "DD", "FIGCAPTION", "FIGURE", "FOOTER", "H1", "H2", "H3", "H4", "H5", "H6", "HEADER", "LI", "MAIN", "NAV", "OL", "P", "PRE", "SECTION", "TABLE", "TR", "UL"]);
+  const output = [];
+
+  function walk(node) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      output.push(node.nodeValue);
+      return;
+    }
+    if (node.nodeType !== Node.ELEMENT_NODE) return;
+
+    if (node.tagName === "BR") {
+      output.push("\n");
+      return;
+    }
+    node.childNodes.forEach(walk);
+    if (blockTags.has(node.tagName)) output.push("\n");
+  }
+
+  container.childNodes.forEach(walk);
+  return output.join("")
+    .replace(/\r\n/g, "\n")
+    .replace(/[ \t]+\n/g, "\n")
+    .replace(/\n[ \t]+/g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
 function updateText() {
   const text = textInput.value.trim();
   charCount.textContent = `${textInput.value.length} / 2000`;
@@ -30,6 +61,20 @@ function showView(target) {
 }
 
 textInput.addEventListener("input", updateText);
+
+textInput.addEventListener("paste", (event) => {
+  const html = event.clipboardData?.getData("text/html");
+  const plainText = event.clipboardData?.getData("text/plain") || "";
+  const pastedText = html ? htmlToPlainText(html) : plainText;
+  if (!pastedText) return;
+
+  event.preventDefault();
+  const start = textInput.selectionStart ?? textInput.value.length;
+  const end = textInput.selectionEnd ?? start;
+  textInput.value = `${textInput.value.slice(0, start)}${pastedText}${textInput.value.slice(end)}`.slice(0, 2000);
+  textInput.selectionStart = textInput.selectionEnd = Math.min(start + pastedText.length, 2000);
+  updateText();
+});
 
 clearText.addEventListener("click", () => {
   textInput.value = "";
