@@ -69,6 +69,8 @@ textarea { width: 100%; min-height: 108px; margin-top: 22px; padding: 0; border:
 .text-button { padding: 0; border: 0; color: var(--blue); background: transparent; font-size: 10px; }
 .sentence-preview { margin-top: 17px; padding: 12px 13px; border-radius: 6px; background: #eef6f2; }
 .sentence-preview p { margin-top: 6px; color: #426553; font-size: 11px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
+.scene-panel-top { margin-bottom: 18px; }
+.scene-panel-top .scene-options { grid-template-columns: repeat(4, 1fr); }
 .scene-options { display: grid; gap: 8px; margin-top: 20px; }
 .scene-option { gap: 10px; width: 100%; padding: 10px; border: 1px solid transparent; border-radius: 6px; background: #f1f4f3; text-align: left; }
 .scene-option.is-selected { border-color: var(--mint-strong); background: #eff9f4; }
@@ -78,6 +80,9 @@ textarea { width: 100%; min-height: 108px; margin-top: 22px; padding: 0; border:
 .scene-option small { margin-top: 2px; color: var(--muted); font-size: 10px; }
 .radio { width: 12px; height: 12px; margin-left: auto; border: 1px solid #bcc9c4; border-radius: 50%; }
 .scene-option.is-selected .radio { border: 4px solid var(--mint-strong); }
+.translation-panel textarea { min-height: 108px; }
+.translation-preview { background: #f0f2fa; }
+.translation-preview p { color: #59627c; }
 .read-panel { display: flex; justify-content: space-between; align-items: center; gap: 25px; margin-top: 18px; }
 .read-copy { gap: 14px; }
 .read-copy p { margin-top: 5px; color: var(--muted); font-size: 11px; }
@@ -128,6 +133,7 @@ select { display: block; min-width: 120px; margin-top: 5px; padding: 8px; border
   .sidebar { width: 210px; flex-basis: 210px; }
   .content { width: calc(100% - 210px); padding: 32px 28px 60px; }
   .setup-grid, .feedback-grid { grid-template-columns: 1fr; }
+  .scene-panel-top .scene-options { grid-template-columns: repeat(2, 1fr); }
   .score-card, .tips { padding: 0 0 18px; border-right: 0; border-left: 0; border-bottom: 1px solid var(--line); }
   .read-panel { align-items: flex-start; flex-direction: column; }
   .read-controls { flex-wrap: wrap; }
@@ -145,4 +151,5 @@ select { display: block; min-width: 120px; margin-top: 5px; padding: 8px; border
   .read-controls { align-items: stretch; flex-direction: column; width: 100%; }
   .select-wrap, select, .primary-button { width: 100%; }
   .practice-actions { align-items: stretch; flex-direction: column; }
+  .scene-panel-top .scene-options { grid-template-columns: 1fr; }
 }

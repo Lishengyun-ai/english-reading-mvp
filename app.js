@@ -1,8 +1,11 @@
 const textInput = document.querySelector("#text-input");
+const translationInput = document.querySelector("#translation-input");
 const charCount = document.querySelector("#char-count");
 const sentencePreview = document.querySelector("#sentence-preview");
+const translationPreview = document.querySelector("#translation-preview");
 const quote = document.querySelector("#quote");
 const clearText = document.querySelector("#clear-text");
+const clearTranslation = document.querySelector("#clear-translation");
 const speakButton = document.querySelector("#speak-button");
 const recordButton = document.querySelector("#record-button");
 const recordLabel = document.querySelector("#record-label");
@@ -54,6 +57,11 @@ function updateText() {
   quote.textContent = text ? `“${text}”` : "“Your sentence will appear here.”";
 }
 
+function updateTranslation() {
+  const translation = translationInput.value.trim();
+  translationPreview.textContent = translation || "输入中文翻译后，这里会显示翻译预览。";
+}
+
 function showView(target) {
   document.querySelectorAll(".view").forEach((view) => view.classList.toggle("is-visible", view.id === target));
   document.querySelectorAll(".nav-item").forEach((item) => item.classList.toggle("is-active", item.dataset.target === target));
@@ -61,25 +69,35 @@ function showView(target) {
 }
 
 textInput.addEventListener("input", updateText);
+translationInput.addEventListener("input", updateTranslation);
 
-textInput.addEventListener("paste", (event) => {
+function preserveRichTextPaste(event, input, onUpdate) {
   const html = event.clipboardData?.getData("text/html");
   const plainText = event.clipboardData?.getData("text/plain") || "";
   const pastedText = html ? htmlToPlainText(html) : plainText;
   if (!pastedText) return;
 
   event.preventDefault();
-  const start = textInput.selectionStart ?? textInput.value.length;
-  const end = textInput.selectionEnd ?? start;
-  textInput.value = `${textInput.value.slice(0, start)}${pastedText}${textInput.value.slice(end)}`.slice(0, 2000);
-  textInput.selectionStart = textInput.selectionEnd = Math.min(start + pastedText.length, 2000);
-  updateText();
-});
+  const start = input.selectionStart ?? input.value.length;
+  const end = input.selectionEnd ?? start;
+  input.value = `${input.value.slice(0, start)}${pastedText}${input.value.slice(end)}`.slice(0, 2000);
+  input.selectionStart = input.selectionEnd = Math.min(start + pastedText.length, 2000);
+  onUpdate();
+}
+
+textInput.addEventListener("paste", (event) => preserveRichTextPaste(event, textInput, updateText));
+translationInput.addEventListener("paste", (event) => preserveRichTextPaste(event, translationInput, updateTranslation));
 
 clearText.addEventListener("click", () => {
   textInput.value = "";
   updateText();
   textInput.focus();
+});
+
+clearTranslation.addEventListener("click", () => {
+  translationInput.value = "";
+  updateTranslation();
+  translationInput.focus();
 });
 
 document.querySelectorAll("[data-target]").forEach((button) => {
@@ -163,3 +181,4 @@ retryButton.addEventListener("click", () => {
 });
 
 updateText();
+updateTranslation();
