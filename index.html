@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Speakly English · 英文朗读助手</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">S</div>
+          <div>
+            <strong>Speakly English</strong>
+            <span>朗读训练工作台</span>
+          </div>
+        </div>
+
+        <nav class="side-nav" aria-label="主导航">
+          <button class="nav-item is-active" type="button" data-target="practice">
+            <span class="nav-icon">◉</span>开始练习
+          </button>
+          <button class="nav-item" type="button" data-target="history">
+            <span class="nav-icon">↗</span>训练记录
+          </button>
+        </nav>
+
+        <div class="sidebar-note">
+          <span class="eyebrow">TODAY'S FOCUS</span>
+          <strong>Speak clearly,<br />one sentence at a time.</strong>
+          <span>完成一次跟读，让表达更接近自然语感。</span>
+        </div>
+
+        <div class="profile">
+          <div class="avatar">L</div>
+          <div>
+            <strong>Lisa</strong>
+            <span>今日已练习 0 / 3 句</span>
+          </div>
+          <button class="icon-button" type="button" aria-label="更多选项">···</button>
+        </div>
+      </aside>
+
+      <section class="content">
+        <header class="topbar">
+          <div>
+            <span class="eyebrow">ENGLISH SHADOWING</span>
+            <h1 id="page-title">开始一段朗读练习</h1>
+          </div>
+          <div class="topbar-status"><span class="status-dot"></span>本地练习模式</div>
+        </header>
+
+        <div id="practice" class="view is-visible">
+          <section class="intro-row">
+            <div>
+              <p class="section-kicker">STEP 01 / 03</p>
+              <h2>先准备今天要说的话</h2>
+              <p class="muted">输入一句英文，选择使用场景，系统会帮你进入跟读练习。</p>
+            </div>
+            <div class="progress-track" aria-label="练习进度">
+              <span class="progress-step is-active">1</span>
+              <i></i>
+              <span class="progress-step">2</span>
+              <i></i>
+              <span class="progress-step">3</span>
+            </div>
+          </section>
+
+          <section class="setup-grid">
+            <article class="panel text-panel">
+              <div class="panel-heading">
+                <div>
+                  <span class="panel-number">01</span>
+                  <h3>输入英文内容</h3>
+                </div>
+                <span class="panel-hint">最多 2000 字符</span>
+              </div>
+              <textarea id="text-input" maxlength="2000" spellcheck="false">Today I want to introduce myself and share one thing I am learning.</textarea>
+              <div class="textarea-footer">
+                <span id="char-count">72 / 2000</span>
+                <button class="text-button" type="button" id="clear-text">清空</button>
+              </div>
+              <div class="sentence-preview">
+                <span class="mini-label">自动分句预览</span>
+                <p id="sentence-preview">Today I want to introduce myself and share one thing I am learning.</p>
+              </div>
+            </article>
+
+            <article class="panel scene-panel">
+              <div class="panel-heading">
+                <div>
+                  <span class="panel-number">02</span>
+                  <h3>选择使用场景</h3>
+                </div>
+              </div>
+              <div class="scene-options" role="radiogroup" aria-label="使用场景">
+                <button class="scene-option is-selected" type="button" data-scene="面试">
+                  <span class="scene-icon">↗</span><span><strong>面试</strong><small>清晰、自信地表达</small></span><span class="radio"></span>
+                </button>
+                <button class="scene-option" type="button" data-scene="商务">
+                  <span class="scene-icon">▣</span><span><strong>商务</strong><small>专业、自然地沟通</small></span><span class="radio"></span>
+                </button>
+                <button class="scene-option" type="button" data-scene="日常">
+                  <span class="scene-icon">♡</span><span><strong>日常</strong><small>轻松、流畅地聊天</small></span><span class="radio"></span>
+                </button>
+                <button class="scene-option" type="button" data-scene="旅行">
+                  <span class="scene-icon">⌁</span><span><strong>旅行</strong><small>实用、敢于开口</small></span><span class="radio"></span>
+                </button>
+              </div>
+            </article>
+          </section>
+
+          <section class="panel read-panel">
+            <div class="read-copy">
+              <span class="panel-number">03</span>
+              <div>
+                <h3>听一遍标准朗读</h3>
+                <p>先听节奏，再开始跟读。你可以选择口音和速度。</p>
+              </div>
+            </div>
+            <div class="read-controls">
+              <label class="select-wrap">口音
+                <select id="accent">
+                  <option value="en-US">美音 · English (US)</option>
+                  <option value="en-GB">英音 · English (UK)</option>
+                </select>
+              </label>
+              <label class="select-wrap">速度
+                <select id="speed">
+                  <option value="0.85">慢速 · 0.85x</option>
+                  <option value="1" selected>正常 · 1.0x</option>
+                  <option value="1.15">稍快 · 1.15x</option>
+                </select>
+              </label>
+              <button class="primary-button" type="button" id="speak-button"><span>▶</span>播放朗读</button>
+            </div>
+          </section>
+
+          <section class="practice-card">
+            <div class="practice-card-header">
+              <div>
+                <span class="eyebrow light">SHADOWING PRACTICE</span>
+                <h2>轮到你了</h2>
+              </div>
+              <div class="record-state" id="record-state">准备开始</div>
+            </div>
+            <div class="quote" id="quote">“Today I want to introduce myself and share one thing I am learning.”</div>
+            <div class="practice-actions">
+              <button class="record-button" type="button" id="record-button"><span class="mic-icon">●</span><span id="record-label">开始跟读</span></button>
+              <span class="record-hint">点击后朗读整句，再次点击结束录音</span>
+            </div>
+          </section>
+
+          <section class="feedback-panel is-hidden" id="feedback-panel">
+            <div class="feedback-heading">
+              <div>
+                <span class="section-kicker">PRACTICE FEEDBACK</span>
+                <h2>这一遍的表现</h2>
+              </div>
+              <span class="demo-badge">演示反馈</span>
+            </div>
+            <div class="feedback-grid">
+              <div class="score-card">
+                <span>综合表现</span>
+                <strong>82</strong>
+                <small>/ 100</small>
+                <div class="score-bar"><span style="width: 82%"></span></div>
+                <p>已经很清楚了，再把重音和停顿做得更自然。</p>
+              </div>
+              <div class="metric-list">
+                <div class="metric"><span>发音</span><strong>86</strong><div class="metric-bar"><i style="width:86%"></i></div></div>
+                <div class="metric"><span>节奏</span><strong>78</strong><div class="metric-bar"><i style="width:78%"></i></div></div>
+                <div class="metric"><span>流利度</span><strong>82</strong><div class="metric-bar"><i style="width:82%"></i></div></div>
+              </div>
+              <div class="tips">
+                <span class="mini-label">下一遍可以注意</span>
+                <p><b>introduce</b> 的重音落在 <em>-duce</em>，不要平均分配每个音节。</p>
+                <p><b>one thing</b> 中间自然连读，保持语气向前。</p>
+              </div>
+            </div>
+            <button class="secondary-button" type="button" id="retry-button">↻ 再练一遍</button>
+          </section>
+        </div>
+
+        <div id="history" class="view">
+          <section class="history-empty">
+            <div class="empty-icon">↗</div>
+            <h2>还没有训练记录</h2>
+            <p>完成第一次跟读后，你的练习表现会显示在这里。</p>
+            <button class="primary-button" type="button" data-target="practice">开始第一次练习</button>
+          </section>
+        </div>
+      </section>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>
