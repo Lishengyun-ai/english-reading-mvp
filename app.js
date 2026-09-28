@@ -14,6 +14,7 @@ const feedbackPanel = document.querySelector("#feedback-panel");
 const retryButton = document.querySelector("#retry-button");
 const accent = document.querySelector("#accent");
 const speed = document.querySelector("#speed");
+const translateButton = document.querySelector("#translate-button");
 const historyEmpty = document.querySelector("#history-empty");
 const historyList = document.querySelector("#history-list");
 const historyItems = document.querySelector("#history-items");
@@ -65,6 +66,50 @@ function updateText() {
 function updateTranslation() {
   const translation = translationInput.value.trim();
   translationPreview.textContent = translation || "输入中文翻译后，这里会显示翻译预览。";
+}
+
+async function translateParagraph(paragraph) {
+  const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(paragraph)}&langpair=en|zh-CN`;
+  const response = await fetch(url);
+  if (!response.ok) throw new Error("翻译服务暂时不可用");
+  const data = await response.json();
+  const translated = data.responseData?.translatedText?.trim();
+  if (!translated) throw new Error("没有获得翻译结果");
+  return translated;
+}
+
+async function translateEnglish() {
+  const source = textInput.value.trim();
+  if (!source) {
+    textInput.focus();
+    return;
+  }
+
+  const originalLabel = translateButton.textContent;
+  translateButton.disabled = true;
+  translateButton.textContent = "翻译中...";
+  try {
+    const paragraphs = source.split(/\n\s*\n/);
+    const translatedParagraphs = [];
+    for (const paragraph of paragraphs) {
+      const lines = paragraph.split("\n").map((line) => line.trim()).filter(Boolean);
+      const translatedLines = [];
+      for (const line of lines) {
+        const chunks = line.match(/.{1,450}(?:\s+|$)/g) || [line];
+        const translatedChunks = [];
+        for (const chunk of chunks) translatedChunks.push(await translateParagraph(chunk.trim()));
+        translatedLines.push(translatedChunks.join(""));
+      }
+      translatedParagraphs.push(translatedLines.join("\n"));
+    }
+    translationInput.value = translatedParagraphs.join("\n\n").slice(0, 2000);
+    updateTranslation();
+  } catch (error) {
+    translationPreview.textContent = error.message || "翻译失败，请稍后重试或手动输入中文。";
+  } finally {
+    translateButton.disabled = false;
+    translateButton.textContent = originalLabel;
+  }
 }
 
 function getHistory() {
@@ -124,6 +169,7 @@ function showView(target) {
 
 textInput.addEventListener("input", updateText);
 translationInput.addEventListener("input", updateTranslation);
+translateButton.addEventListener("click", translateEnglish);
 
 function preserveRichTextPaste(event, input, onUpdate) {
   const html = event.clipboardData?.getData("text/html");

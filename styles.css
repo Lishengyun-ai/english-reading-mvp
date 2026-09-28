@@ -81,6 +81,9 @@ textarea { width: 100%; min-height: 108px; margin-top: 22px; padding: 0; border:
 .radio { width: 12px; height: 12px; margin-left: auto; border: 1px solid #bcc9c4; border-radius: 50%; }
 .scene-option.is-selected .radio { border: 4px solid var(--mint-strong); }
 .translation-panel textarea { min-height: 108px; }
+.translation-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 10px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+.translate-button { padding: 8px 11px; }
+.translate-button:disabled { cursor: wait; opacity: .65; }
 .translation-preview { background: #f0f2fa; }
 .translation-preview p { color: #59627c; }
 .read-panel { display: flex; justify-content: space-between; align-items: center; gap: 25px; margin-top: 18px; }
