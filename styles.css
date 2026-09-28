@@ -68,7 +68,7 @@ textarea { width: 100%; min-height: 108px; margin-top: 22px; padding: 0; border:
 .textarea-footer { display: flex; justify-content: space-between; padding: 10px 0 16px; border-bottom: 1px solid var(--line); color: var(--muted); font-size: 10px; }
 .text-button { padding: 0; border: 0; color: var(--blue); background: transparent; font-size: 10px; }
 .sentence-preview { margin-top: 17px; padding: 12px 13px; border-radius: 6px; background: #eef6f2; }
-.sentence-preview p { margin-top: 6px; color: #426553; font-size: 11px; line-height: 1.5; }
+.sentence-preview p { margin-top: 6px; color: #426553; font-size: 11px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
 .scene-options { display: grid; gap: 8px; margin-top: 20px; }
 .scene-option { gap: 10px; width: 100%; padding: 10px; border: 1px solid transparent; border-radius: 6px; background: #f1f4f3; text-align: left; }
 .scene-option.is-selected { border-color: var(--mint-strong); background: #eff9f4; }
@@ -92,7 +92,7 @@ select { display: block; min-width: 120px; margin-top: 5px; padding: 8px; border
 .practice-card h2 { color: #fff; }
 .record-state { padding: 5px 9px; border: 1px solid rgba(255,255,255,.25); border-radius: 20px; color: #b7cbc5; font-size: 10px; }
 .record-state.is-recording { color: #ffd0c5; border-color: rgba(255,208,197,.55); }
-.quote { max-width: 720px; margin: 28px auto 21px; font-family: Georgia, serif; font-size: clamp(22px, 3vw, 31px); line-height: 1.3; text-align: center; }
+.quote { max-width: 720px; margin: 28px auto 21px; font-family: Georgia, serif; font-size: clamp(22px, 3vw, 31px); line-height: 1.3; text-align: center; white-space: pre-wrap; overflow-wrap: anywhere; }
 .practice-actions { display: flex; align-items: center; justify-content: center; gap: 14px; }
 .record-button { display: inline-flex; align-items: center; gap: 9px; padding: 11px 18px; border: 0; border-radius: 5px; color: #fff; background: var(--coral); font-weight: 800; font-size: 12px; }
 .record-button.is-recording { background: #d85e54; }
