@@ -13,6 +13,7 @@ const recordState = document.querySelector("#record-state");
 const feedbackPanel = document.querySelector("#feedback-panel");
 const retryButton = document.querySelector("#retry-button");
 const accent = document.querySelector("#accent");
+const voice = document.querySelector("#voice");
 const speed = document.querySelector("#speed");
 const translateButton = document.querySelector("#translate-button");
 const historyEmpty = document.querySelector("#history-empty");
@@ -24,6 +25,41 @@ let recorder;
 let recordingTimer;
 let recordingSeconds = 0;
 const HISTORY_KEY = "speakly-english-practice-history";
+let availableVoices = [];
+
+function preferredVoice(voices, language) {
+  const languageVoices = voices.filter((item) => item.lang.toLowerCase().startsWith(language.toLowerCase()));
+  const preferredNames = [
+    "Samantha", "Microsoft Aria", "Microsoft Jenny", "Ava",
+    "Google US English", "Microsoft Zira", "Alex", "Karen",
+  ];
+  return [...languageVoices].sort((left, right) => {
+    const leftScore = preferredNames.findIndex((name) => left.name.includes(name));
+    const rightScore = preferredNames.findIndex((name) => right.name.includes(name));
+    return (leftScore < 0 ? 99 : leftScore) - (rightScore < 0 ? 99 : rightScore);
+  })[0] || languageVoices[0];
+}
+
+function renderVoices() {
+  if (!("speechSynthesis" in window)) return;
+  const selectedLanguage = accent.value;
+  const languageVoices = availableVoices
+    .filter((item) => item.lang.toLowerCase().startsWith(selectedLanguage.toLowerCase()))
+    .sort((left, right) => left.name.localeCompare(right.name));
+  const previousValue = voice.value;
+  voice.innerHTML = `<option value="">自动选择温和音色</option>${languageVoices
+    .map((item) => `<option value="${availableVoices.indexOf(item)}">${item.name}</option>`)
+    .join("")}`;
+  if (languageVoices.some((item) => String(availableVoices.indexOf(item)) === previousValue)) {
+    voice.value = previousValue;
+  }
+}
+
+function loadVoices() {
+  if (!("speechSynthesis" in window)) return;
+  availableVoices = window.speechSynthesis.getVoices();
+  renderVoices();
+}
 
 function htmlToPlainText(html) {
   const container = document.createElement("div");
@@ -225,10 +261,24 @@ speakButton.addEventListener("click", () => {
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = accent.value;
   utterance.rate = Number(speed.value);
+  utterance.pitch = accent.value === "en-US" ? 1.08 : 1.02;
+  const selectedVoice = voice.value === ""
+    ? preferredVoice(availableVoices, accent.value)
+    : availableVoices[Number(voice.value)];
+  if (selectedVoice) {
+    utterance.voice = selectedVoice;
+    utterance.lang = selectedVoice.lang;
+  }
   speakButton.innerHTML = "<span>■</span>朗读中...";
   utterance.onend = () => { speakButton.innerHTML = "<span>▶</span>播放朗读"; };
   window.speechSynthesis.speak(utterance);
 });
+
+accent.addEventListener("change", renderVoices);
+if ("speechSynthesis" in window) {
+  window.speechSynthesis.addEventListener("voiceschanged", loadVoices);
+  loadVoices();
+}
 
 function formatTime(seconds) {
   return `录音中 00:${String(seconds).padStart(2, "0")}`;
