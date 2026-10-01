@@ -16,16 +16,39 @@ const accent = document.querySelector("#accent");
 const voice = document.querySelector("#voice");
 const speed = document.querySelector("#speed");
 const translateButton = document.querySelector("#translate-button");
+const translationDirection = document.querySelector("#translation-direction");
 const historyEmpty = document.querySelector("#history-empty");
 const historyList = document.querySelector("#history-list");
 const historyItems = document.querySelector("#history-items");
 const historyCount = document.querySelector("#history-count");
+const sidebar = document.querySelector(".sidebar");
+const previewFontSize = document.querySelector("#preview-font-size");
 
 let recorder;
 let recordingTimer;
 let recordingSeconds = 0;
 const HISTORY_KEY = "speakly-english-practice-history";
+const SIDEBAR_KEY = "speakly-sidebar-collapsed";
 let availableVoices = [];
+
+function setSidebarCollapsed(collapsed) {
+  sidebar.classList.toggle("is-collapsed", collapsed);
+  const toggle = document.querySelector("#sidebar-toggle");
+  if (toggle) {
+    toggle.textContent = collapsed ? "›" : "‹";
+    toggle.setAttribute("aria-label", collapsed ? "展开侧栏" : "折叠侧栏");
+    toggle.setAttribute("title", collapsed ? "展开侧栏" : "折叠侧栏");
+  }
+  localStorage.setItem(SIDEBAR_KEY, String(collapsed));
+}
+
+function applyPreviewFontSize() {
+  const fontSize = previewFontSize.value === "quote"
+    ? getComputedStyle(quote).fontSize
+    : `${previewFontSize.value}px`;
+  sentencePreview.style.fontSize = fontSize;
+  localStorage.setItem("speakly-preview-font-size", previewFontSize.value);
+}
 
 function preferredVoice(voices, language) {
   const languageVoices = voices.filter((item) => item.lang.toLowerCase().startsWith(language.toLowerCase()));
@@ -104,8 +127,9 @@ function updateTranslation() {
   translationPreview.textContent = translation || "输入中文翻译后，这里会显示翻译预览。";
 }
 
-async function translateParagraph(paragraph) {
-  const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(paragraph)}&langpair=en|zh-CN`;
+async function translateParagraph(paragraph, direction) {
+  const langpair = direction === "zh-en" ? "zh-CN|en" : "en|zh-CN";
+  const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(paragraph)}&langpair=${langpair}`;
   const response = await fetch(url);
   if (!response.ok) throw new Error("翻译服务暂时不可用");
   const data = await response.json();
@@ -115,9 +139,12 @@ async function translateParagraph(paragraph) {
 }
 
 async function translateEnglish() {
-  const source = textInput.value.trim();
+  const isChineseToEnglish = translationDirection.value === "zh-en";
+  const sourceInput = isChineseToEnglish ? translationInput : textInput;
+  const targetInput = isChineseToEnglish ? textInput : translationInput;
+  const source = sourceInput.value.trim();
   if (!source) {
-    textInput.focus();
+    sourceInput.focus();
     return;
   }
 
@@ -133,13 +160,14 @@ async function translateEnglish() {
       for (const line of lines) {
         const chunks = line.match(/.{1,450}(?:\s+|$)/g) || [line];
         const translatedChunks = [];
-        for (const chunk of chunks) translatedChunks.push(await translateParagraph(chunk.trim()));
+        for (const chunk of chunks) translatedChunks.push(await translateParagraph(chunk.trim(), translationDirection.value));
         translatedLines.push(translatedChunks.join(""));
       }
       translatedParagraphs.push(translatedLines.join("\n"));
     }
-    translationInput.value = translatedParagraphs.join("\n\n").slice(0, 2000);
-    updateTranslation();
+    targetInput.value = translatedParagraphs.join("\n\n").slice(0, 2000);
+    if (isChineseToEnglish) updateText();
+    else updateTranslation();
   } catch (error) {
     translationPreview.textContent = error.message || "翻译失败，请稍后重试或手动输入中文。";
   } finally {
@@ -206,6 +234,10 @@ function showView(target) {
 textInput.addEventListener("input", updateText);
 translationInput.addEventListener("input", updateTranslation);
 translateButton.addEventListener("click", translateEnglish);
+previewFontSize.addEventListener("change", applyPreviewFontSize);
+window.addEventListener("resize", () => {
+  if (previewFontSize.value === "quote") applyPreviewFontSize();
+});
 
 function preserveRichTextPaste(event, input, onUpdate) {
   const html = event.clipboardData?.getData("text/html");
@@ -331,6 +363,16 @@ retryButton.addEventListener("click", () => {
   recordButton.scrollIntoView({ behavior: "smooth", block: "center" });
 });
 
+const sidebarToggle = document.createElement("button");
+sidebarToggle.id = "sidebar-toggle";
+sidebarToggle.className = "sidebar-toggle";
+sidebarToggle.type = "button";
+sidebar.insertBefore(sidebarToggle, sidebar.firstChild);
+sidebarToggle.addEventListener("click", () => setSidebarCollapsed(!sidebar.classList.contains("is-collapsed")));
+
 updateText();
 updateTranslation();
 renderHistory();
+previewFontSize.value = localStorage.getItem("speakly-preview-font-size") || "18";
+applyPreviewFontSize();
+setSidebarCollapsed(localStorage.getItem(SIDEBAR_KEY) === "true");
